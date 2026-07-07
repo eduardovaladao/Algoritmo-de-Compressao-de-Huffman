@@ -1,1 +1,1 @@
-# Aplica-o---Estudo-sobre-o-Algoritmo-de-Compress-o-de-Huffman
+# Aplicação - Algoritmo de Compressão de Huffman
