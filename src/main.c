@@ -1,15 +1,22 @@
-#include "../lib/arvoreBinaria.h"
+#include <stdio.h>
 #include "../lib/huffman.h"
+#include "../lib/arvoreBinaria.h"
 
 int main()
 {
     char str[200];
-    printf("Digite a palavra");
+    struct Huffman *h;
+
+    printf("Digite a palavra: ");
     scanf("%s", str);
 
-    struct Huffman *h = comprime(str);
+    h = comprime(str);
 
-    printf("O resultado codificado eh: %s", h->codigo);
+    printf("\nArvore de Huffman:\n");
+    imprimeArvore(h->arvore, 0);
+
+    printf("\nCodigos:\n");
+    imprimeCodigos(h->arvore);
 
     return 0;
 }

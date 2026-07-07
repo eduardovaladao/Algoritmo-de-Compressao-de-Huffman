@@ -2,71 +2,50 @@
 #include <stdlib.h>
 #include "../lib/fila.h"
 #include "../lib/arvoreBinaria.h"
-
-typedef struct Huffman
-{
-    ArvBin arvore;
-    int codigo;
-} Huffman;
+#include "../lib/huffman.h"
 
 struct Huffman *comprime(char *str)
 {
     FilaPrioridade *fila = criaFila();
-    ArvBin *arvore = cria_ArvBin();
-    int codigo;
+    ArvBin esq, dir, raiz;
+    int prioridade_esq, prioridade_dir, prioridade_raiz;
+    int i, j, k, contador, ja_inserido;
 
-    for (int i = 0; str[i] != '\0'; i++)
+    for (i = 0; str[i] != '\0'; i++)
     {
-        int contador = 1;
+        ja_inserido = 0;
+        for (k = 0; k < i; k++)
+            if (str[k] == str[i])
+            {
+                ja_inserido = 1;
+                break;
+            }
+        if (ja_inserido)
+            continue;
 
-        for (int j = 0; str[j] != '\0'; j++)
+        contador = 0;
+        for (j = 0; str[j] != '\0'; j++)
             if (str[j] == str[i])
                 contador++;
 
-        inserir(&fila, str[i], contador);
+        inserir(fila, criarFolha(str[i], contador), contador);
     }
 
-    while (filaVazia(&fila) != 0)
+    while (tamanhoFila(fila) > 1)
     {
-        char letra_primeiro_menor, letra_segundo_menor;
-        int prioridade_primeiro_menor, prioridade_segundo_menor;
-
-        remover(&fila, &letra_primeiro_menor, &prioridade_primeiro_menor);
-        remover(&fila, &letra_segundo_menor, &prioridade_segundo_menor);
-
-        int soma_prioridade = prioridade_primeiro_menor + prioridade_segundo_menor;
-
-        insere_ArvBin(arvore, soma_prioridade, letra_primeiro_menor, prioridade_primeiro_menor, letra_segundo_menor, prioridade_segundo_menor);
-
-        inserir(&fila, '#', soma_prioridade);
+        remover(fila, &esq, &prioridade_esq);
+        remover(fila, &dir, &prioridade_dir);
+        inserir(fila, unirNos(esq, dir), prioridade_esq + prioridade_dir);
     }
 
-    struct Huffman *huff = (Huffman *)malloc(sizeof(Huffman));
-    huff->arvore = arvore;
-    huff->codigo = codigo;
+    raiz = NULL;
+    if (!filaVazia(fila))
+        remover(fila, &raiz, &prioridade_raiz);
+
+    struct Huffman *huff = (struct Huffman *)malloc(sizeof(struct Huffman));
+    huff->arvore = raiz;
+
+    liberaFila(fila);
 
     return huff;
 }
-
-// Huffman(frequencias)
-
-//     fila = criarFilaPrioridade()
-
-//                para cada símbolo
-//            criar nó
-//            inserir na fila
-
-//            enquanto tamanho(fila) > 1
-
-//            x = removerMenor(fila)
-//                y = removerMenor(fila)
-
-//                    z = novoNo()
-
-//                            z.freq = x.freq + y.freq
-
-//                                              z.esq = x z.dir = y
-
-//     inserir(fila, z)
-
-// retornar removerMenor(fila)

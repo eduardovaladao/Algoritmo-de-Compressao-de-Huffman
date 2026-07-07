@@ -1,11 +1,13 @@
 #ifndef FILAPRIORIDADE_H
 #define FILAPRIORIDADE_H
 
+#include "arvoreBinaria.h"
+
 #define MAX 100
 
 typedef struct
 {
-    char dado;
+    ArvBin no;
     int prioridade;
 } Elemento;
 
@@ -20,10 +22,12 @@ int filaVazia(FilaPrioridade *fp);
 int filaCheia(FilaPrioridade *fp);
 
 // Insere elemento
-int inserir(FilaPrioridade *fp, int dado, int prioridade);
+int inserir(FilaPrioridade *fp, ArvBin no, int prioridade);
 
-// Remove elemento de maior prioridade
-int remover(FilaPrioridade *fp, char *letra, int *prioridade);
+// Remove elemento de menor prioridade
+int remover(FilaPrioridade *fp, ArvBin *no, int *prioridade);
+
+int tamanhoFila(FilaPrioridade *fp);
 
 // Consulta elemento de maior prioridade
 int consultar(FilaPrioridade *fp, Elemento *e);
