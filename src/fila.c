@@ -89,13 +89,14 @@ int filaCheia(FilaPrioridade *fp)
     return (fp->quantidade == MAX);
 }
 
-int inserir(FilaPrioridade *fp, ArvBin no, int prioridade)
+int inserir(FilaPrioridade *fp, char letra, int prioridade, ArvBin arvore)
 {
     if (fp == NULL || filaCheia(fp))
         return 0;
 
-    fp->heap[fp->quantidade].no = no;
+    fp->heap[fp->quantidade].dado = letra;
     fp->heap[fp->quantidade].prioridade = prioridade;
+    fp->heap[fp->quantidade].arvore = arvore;
 
     subir(fp, fp->quantidade);
 
@@ -104,13 +105,14 @@ int inserir(FilaPrioridade *fp, ArvBin no, int prioridade)
     return 1;
 }
 
-int remover(FilaPrioridade *fp, ArvBin *no, int *prioridade)
+int remover(FilaPrioridade *fp, char *letra, int *prioridade, ArvBin *arvore)
 {
     if (fp == NULL || filaVazia(fp))
         return 0;
 
-    *no = fp->heap[0].no;
+    *letra = fp->heap[0].dado;
     *prioridade = fp->heap[0].prioridade;
+    *arvore = fp->heap[0].arvore;
 
     fp->heap[0] = fp->heap[fp->quantidade - 1];
     fp->quantidade--;
@@ -128,12 +130,4 @@ int consultar(FilaPrioridade *fp, Elemento *e)
     *e = fp->heap[0];
 
     return 1;
-}
-
-int tamanhoFila(FilaPrioridade *fp)
-{
-    if (fp == NULL)
-        return 0;
-
-    return fp->quantidade;
 }

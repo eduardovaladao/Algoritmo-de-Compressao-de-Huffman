@@ -7,8 +7,9 @@
 
 typedef struct
 {
-    ArvBin no;
+    char dado;
     int prioridade;
+    ArvBin arvore;
 } Elemento;
 
 typedef struct filaPrioridade FilaPrioridade;
@@ -21,15 +22,10 @@ int filaVazia(FilaPrioridade *fp);
 
 int filaCheia(FilaPrioridade *fp);
 
-// Insere elemento
-int inserir(FilaPrioridade *fp, ArvBin no, int prioridade);
+int inserir(FilaPrioridade *fp, char letra, int prioridade, ArvBin arvore);
 
-// Remove elemento de menor prioridade
-int remover(FilaPrioridade *fp, ArvBin *no, int *prioridade);
+int remover(FilaPrioridade *fp, char *letra, int *prioridade, ArvBin *arvore);
 
-int tamanhoFila(FilaPrioridade *fp);
-
-// Consulta elemento de maior prioridade
 int consultar(FilaPrioridade *fp, Elemento *e);
 
 #endif

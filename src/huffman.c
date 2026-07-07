@@ -7,8 +7,10 @@
 struct Huffman *comprime(char *str)
 {
     FilaPrioridade *fila = criaFila();
-    ArvBin esq, dir, raiz;
-    int prioridade_esq, prioridade_dir, prioridade_raiz;
+    ArvBin *arvore = cria_ArvBin();
+    char letra_primeiro_menor, letra_segundo_menor;
+    int prioridade_primeiro_menor, prioridade_segundo_menor;
+    ArvBin arvore_primeiro, arvore_segundo;
     int i, j, k, contador, ja_inserido;
 
     for (i = 0; str[i] != '\0'; i++)
@@ -28,24 +30,33 @@ struct Huffman *comprime(char *str)
             if (str[j] == str[i])
                 contador++;
 
-        inserir(fila, criarFolha(str[i], contador), contador);
+        inserir(fila, str[i], contador, NULL);
     }
 
-    while (tamanhoFila(fila) > 1)
+    while (1)
     {
-        remover(fila, &esq, &prioridade_esq);
-        remover(fila, &dir, &prioridade_dir);
-        inserir(fila, unirNos(esq, dir), prioridade_esq + prioridade_dir);
-    }
+        if (!remover(fila, &letra_primeiro_menor, &prioridade_primeiro_menor, &arvore_primeiro))
+            break;
 
-    raiz = NULL;
-    if (!filaVazia(fila))
-        remover(fila, &raiz, &prioridade_raiz);
+        if (!remover(fila, &letra_segundo_menor, &prioridade_segundo_menor, &arvore_segundo))
+        {
+            inserir(fila, letra_primeiro_menor, prioridade_primeiro_menor, arvore_primeiro);
+            break;
+        }
+
+        insere_ArvBin(arvore, prioridade_primeiro_menor + prioridade_segundo_menor,
+                      letra_primeiro_menor, prioridade_primeiro_menor,
+                      letra_segundo_menor, prioridade_segundo_menor,
+                      arvore_primeiro, arvore_segundo);
+
+        inserir(fila, '#', prioridade_primeiro_menor + prioridade_segundo_menor, *arvore);
+    }
 
     struct Huffman *huff = (struct Huffman *)malloc(sizeof(struct Huffman));
-    huff->arvore = raiz;
+    huff->arvore = *arvore;
 
     liberaFila(fila);
+    free(arvore);
 
     return huff;
 }
