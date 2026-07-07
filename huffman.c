@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+int verbosity = 0;
+int simple_out = 0;
+
 typedef struct no 
 {
   int chave;
@@ -76,6 +79,43 @@ No* criarArv(No **fila, int tam_f)
 		f[tam_f] = pai;
 		tam_f++;
 	}
+
+  return f[0];
+}
+
+void gerarCodigo(No* no, char cod[], int prof, char tabela[256][128])
+{
+  //Se a arvore não for criada
+  if (no == NULL) return;
+
+  //Se for folha
+  if (no->esq == NULL && no->dir == NULL)
+  {
+    cod[prof] = '\0';
+    int i = 0;
+    do {
+      tabela[(unsigned char)no->val][i] = cod[i]; 
+      i++;
+    } while (cod[i-1]!='\0'); // preferi usar isso ao inves do strdup
+    return;
+  } 
+
+  //Para pesquisar os codigos da direita
+  cod[prof] = '1';
+  gerarCodigo(no->dir, cod, prof+1, tabela);
+
+  //Para pesquisar os codigos da esquerda
+  cod[prof] = '0';
+  gerarCodigo(no->esq, cod, prof+1, tabela);
+}
+
+//Compreesão simples para o print
+void compressorSimples(char *input, char tabela[256][128])
+{
+  printf("%s\n", input);
+  for (int i = 0; input[i] != '\0'; i++)
+    printf("%s", tabela[(unsigned char)input[i]]);
+  printf("\n");
 }
 
 void huffman(char *input)
@@ -121,18 +161,51 @@ void huffman(char *input)
 
 	No *arv = criarArv(fila, t_fila);
 
-	mostrarArvore(arv);
+	if (verbosity) 
+  {
+    printf("\n[+] Arvore binaria\n");
+    mostrarArvore(arv);
+  }
+
+  char tabela[256][128] = {0};
+  char codigo[128];
+
+  gerarCodigo(arv, codigo, 0, tabela);
+
+  if (verbosity)
+  {
+    printf("\n[+] Mapeamento dos caracteres\n");
+    for (int i = 0; i < 256; i++) 
+      if (tabela[i][0] != '\0')
+        printf("%c -> %s\n", i, tabela[i]);
+  }
+
+  if (simple_out) compressorSimples(input, tabela);
 }
 
-
+void mostraAjuda(char *nomeprograma)
+{
+	printf("Modo de uso: %s -v -sO 'conteudo'\n", nomeprograma);
+  printf("-v   Mostra o código com verbosidade\n");
+  printf("-cS  Compressão simples, somente mostrando na tela\n");
+  printf("-h   Mostra opções de uso\n");
+}
 
 int main (int argc, char **argv)
 {
 	if (argc < 2)
 	{
-		printf("Modo de uso: %s 'conteudo'", argv[0]);
+    mostraAjuda(argv[0]);
 		return 1;
 	}
-	
-	huffman(argv[1]);
+
+  for (int i = 0; i < argc; i++)
+  {
+    if (strcmp(argv[i], "-v") == 0) verbosity = 1;
+    if (strcmp(argv[i], "-sO") == 0) simple_out = 1;
+    if (strcmp(argv[i], "-h") == 0) {mostraAjuda(argv[0]); return 0;}
+  }
+
+	huffman(argv[argc-1]);
+  return 0;
 }
