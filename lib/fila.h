@@ -1,17 +1,31 @@
-#define TAM_MAX 255
+#ifndef FILAPRIORIDADE_H
+#define FILAPRIORIDADE_H
 
-typedef int TipoValor;
+#define MAX 100
 
-typedef struct {
-    TipoValor itens[TAM_MAX]; // vetor relacional
-    int inicio;
-    int fim;
-    int total;
-} Fila;
+typedef struct
+{
+    char dado;
+    int prioridade;
+} Elemento;
 
-void inicializarFila(Fila *f);
-int vazia(Fila *f);
-int cheia(Fila *f);
-int pop(Fila *f, int valor);
-int push(Fila *f, int *valor);
-int tamanhoFila(Fila *f);
+typedef struct filaPrioridade FilaPrioridade;
+
+FilaPrioridade *criaFila();
+
+void liberaFila(FilaPrioridade *fp);
+
+int filaVazia(FilaPrioridade *fp);
+
+int filaCheia(FilaPrioridade *fp);
+
+// Insere elemento
+int inserir(FilaPrioridade *fp, int dado, int prioridade);
+
+// Remove elemento de maior prioridade
+int remover(FilaPrioridade *fp, char *letra, int *prioridade);
+
+// Consulta elemento de maior prioridade
+int consultar(FilaPrioridade *fp, Elemento *e);
+
+#endif

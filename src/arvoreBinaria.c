@@ -4,7 +4,8 @@
 
 struct NO
 {
-	int info;
+	char info;
+	int freq;
 	struct NO *esq;
 	struct NO *dir;
 };
@@ -17,24 +18,6 @@ ArvBin *cria_ArvBin()
 	return raiz;
 }
 
-void libera_NO(struct NO *no)
-{
-	if (no == NULL)
-		return;
-	libera_NO(no->esq);
-	libera_NO(no->dir);
-	free(no);
-	no = NULL;
-}
-
-void libera_ArvBin(ArvBin *raiz)
-{
-	if (raiz == NULL)
-		return;
-	libera_NO(*raiz); // libera cada nó
-	free(raiz);		  // libera a raiz
-}
-
 int estaVazia_ArvBin(ArvBin *raiz)
 {
 	if (raiz == NULL)
@@ -44,32 +27,7 @@ int estaVazia_ArvBin(ArvBin *raiz)
 	return 0;
 }
 
-int totalNO_ArvBin(ArvBin *raiz)
-{
-	if (raiz == NULL)
-		return 0;
-	if (*raiz == NULL)
-		return 0;
-	int totalNO_esq = totalNO_ArvBin(&((*raiz)->esq));
-	int totalNO_dir = totalNO_ArvBin(&((*raiz)->dir));
-	return (totalNO_esq + totalNO_dir + 1);
-}
-
-int altura_ArvBin(ArvBin *raiz)
-{
-	if (raiz == NULL)
-		return 0;
-	if (*raiz == NULL)
-		return 0;
-	int alt_esq = altura_ArvBin(&((*raiz)->esq));
-	int alt_dir = altura_ArvBin(&((*raiz)->dir));
-	if (alt_esq > alt_dir)
-		return (alt_esq + 1);
-	else
-		return (alt_dir + 1);
-}
-
-int insere_ArvBin(ArvBin *raiz, int valor)
+int insere_ArvBin(ArvBin *raiz, int prioridade, char letra_primeiro_menor, int prioridade_primeiro_menor, char letra_segundo_menor, int prioridade_segundo_menor)
 {
 	if (raiz == NULL)
 		return 0;
@@ -77,39 +35,17 @@ int insere_ArvBin(ArvBin *raiz, int valor)
 	novo = (struct NO *)malloc(sizeof(struct NO));
 	if (novo == NULL)
 		return 0;
-	novo->info = valor;
-	novo->dir = NULL;
-	novo->esq = NULL;
+	novo->info = '#';
+	novo->freq = prioridade;
+	novo->dir->info = letra_primeiro_menor;
+	novo->dir->freq = prioridade_primeiro_menor;
+	novo->dir->info = letra_segundo_menor;
+	novo->dir->freq = prioridade_segundo_menor;
 
 	if (*raiz == NULL)
 		*raiz = novo;
-	else
-	{
-		struct NO *atual = *raiz;
-		struct NO *ant = NULL;
+	// else
 
-		// Navega nos nós da árvore até chegar em um nó folha
-		while (atual != NULL)
-		{
-			ant = atual;
-			if (valor == atual->info)
-			{
-				free(novo);
-				return 0; // elemento já existe
-			}
-
-			if (valor > atual->info)
-				atual = atual->dir;
-			else
-				atual = atual->esq;
-		}
-
-		// Insere como filho desse nó folha
-		if (valor > ant->info)
-			ant->dir = novo;
-		else
-			ant->esq = novo;
-	}
 	return 1;
 }
 
@@ -130,105 +66,4 @@ int consulta_ArvBin(ArvBin *raiz, int valor)
 			atual = atual->esq;
 	}
 	return 0;
-}
-
-struct NO *remove_atual(struct NO *atual)
-{
-	struct NO *no1, *no2;
-
-	// Sem filho da esquerda. Apontar para o filho da direita (trata nó folha e nó com 1 filho).
-	if (atual->esq == NULL)
-	{
-		no2 = atual->dir;
-		free(atual);
-		return no2;
-	}
-
-	// Procura filho mais à direita na sub-árvore da esquerda.
-	no1 = atual;
-	no2 = atual->esq;
-	while (no2->dir != NULL)
-	{
-		no1 = no2;
-		no2 = no2->dir;
-	}
-
-	// Copia o filho mais à direita na sub-árvore da esquerda para o lugar do nó removido.
-	if (no1 != atual)
-	{
-		no1->dir = no2->esq;
-		no2->esq = atual->esq;
-	}
-	no2->dir = atual->dir;
-
-	free(atual);
-	return no2;
-}
-// http://www.ime.usp.br/~pf/algoritmos/aulas/binst.html
-int remove_ArvBin(ArvBin *raiz, int valor)
-{
-	if (raiz == NULL)
-		return 0;
-	struct NO *ant = NULL;
-	struct NO *atual = *raiz;
-	while (atual != NULL)
-	{
-		// Achou o nó a ser removido. Tratar o tipo de remoção.
-		if (valor == atual->info)
-		{
-			if (atual == *raiz)
-				*raiz = remove_atual(atual);
-			else
-			{
-				if (ant->dir == atual)
-					ant->dir = remove_atual(atual);
-				else
-					ant->esq = remove_atual(atual);
-			}
-			return 1;
-		}
-		// Continua buscando na árvore nó a ser removido
-		ant = atual;
-		if (valor > atual->info)
-			atual = atual->dir;
-		else
-			atual = atual->esq;
-	}
-	return 0;
-}
-
-void preOrdem_ArvBin(ArvBin *raiz)
-{
-	if (raiz == NULL)
-		return;
-	if (*raiz != NULL)
-	{
-		printf("%d\n", (*raiz)->info);
-		preOrdem_ArvBin(&((*raiz)->esq));
-		preOrdem_ArvBin(&((*raiz)->dir));
-	}
-}
-
-void emOrdem_ArvBin(ArvBin *raiz)
-{
-	if (raiz == NULL)
-		return;
-	if (*raiz != NULL)
-	{
-		emOrdem_ArvBin(&((*raiz)->esq));
-		printf("%d\n", (*raiz)->info);
-		emOrdem_ArvBin(&((*raiz)->dir));
-	}
-}
-
-void posOrdem_ArvBin(ArvBin *raiz)
-{
-	if (raiz == NULL)
-		return;
-	if (*raiz != NULL)
-	{
-		posOrdem_ArvBin(&((*raiz)->esq));
-		posOrdem_ArvBin(&((*raiz)->dir));
-		printf("%d\n", (*raiz)->info);
-	}
 }

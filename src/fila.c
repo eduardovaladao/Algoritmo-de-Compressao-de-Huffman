@@ -1,52 +1,131 @@
 #include <stdio.h>
-#include "../lib/fila.h";
+#include <stdlib.h>
+#include "../lib/fila.h"
 
-
-void inicializarFila(Fila * f)
+struct filaPrioridade
 {
-    f->inicio = 0;
-    f->fim=0;
-    f->total=0;
+    int quantidade;
+    Elemento heap[MAX];
+};
+
+static void subir(FilaPrioridade *fp, int i)
+{
+    int pai;
+    Elemento aux;
+
+    while (i > 0)
+    {
+        pai = (i - 1) / 2;
+
+        if (fp->heap[pai].prioridade <= fp->heap[i].prioridade)
+            break;
+
+        aux = fp->heap[pai];
+        fp->heap[pai] = fp->heap[i];
+        fp->heap[i] = aux;
+
+        i = pai;
+    }
 }
 
-int vazia(Fila * f)
+static void descer(FilaPrioridade *fp, int i)
 {
-    return (f->total == 0 ? 1 : 0);
+    int filhoEsq, filhoDir, menor;
+    Elemento aux;
+
+    while (1)
+    {
+        filhoEsq = 2 * i + 1;
+        filhoDir = 2 * i + 2;
+        menor = i;
+
+        if (filhoEsq < fp->quantidade &&
+            fp->heap[filhoEsq].prioridade < fp->heap[menor].prioridade)
+            menor = filhoEsq;
+
+        if (filhoDir < fp->quantidade &&
+            fp->heap[filhoDir].prioridade < fp->heap[menor].prioridade)
+            menor = filhoDir;
+
+        if (menor == i)
+            break;
+
+        aux = fp->heap[i];
+        fp->heap[i] = fp->heap[menor];
+        fp->heap[menor] = aux;
+
+        i = menor;
+    }
 }
 
-int cheia(Fila * f)
+FilaPrioridade *criaFila()
 {
-    return (f->total == TAM_MAX ? 1 : 0);
+    FilaPrioridade *fp = (FilaPrioridade *)malloc(sizeof(FilaPrioridade));
+
+    if (fp != NULL)
+        fp->quantidade = 0;
+
+    return fp;
 }
 
-int pop(Fila * f, int valor)
+void liberaFila(FilaPrioridade *fp)
 {
-    if (cheia(f))
+    free(fp);
+}
+
+int filaVazia(FilaPrioridade *fp)
+{
+    if (fp == NULL)
+        return 1;
+
+    return (fp->quantidade == 0);
+}
+
+int filaCheia(FilaPrioridade *fp)
+{
+    if (fp == NULL)
         return 0;
 
-    f->itens[f->fim] = valor;
-    f->fim = (f->fim + 1) % TAM_MAX;
-    f->total++;
+    return (fp->quantidade == MAX);
+}
+
+int inserir(FilaPrioridade *fp, char letra, int prioridade)
+{
+    if (fp == NULL || filaCheia(fp))
+        return 0;
+
+    fp->heap[fp->quantidade].dado = letra;
+    fp->heap[fp->quantidade].prioridade = prioridade;
+
+    subir(fp, fp->quantidade);
+
+    fp->quantidade++;
 
     return 1;
 }
 
-int push(Fila * f, int *valor)
+int remover(FilaPrioridade *fp, char *letra, int *prioridade)
 {
-    if (vazia(f))
-        return 0; // Fila vazia
+    if (fp == NULL || filaVazia(fp))
+        return 0;
 
-    *valor = f->itens[f->inicio];
-    f->inicio = (f->inicio + 1) % TAM_MAX;
-    f->total--;
+    *letra = fp->heap[0].dado;
+    *prioridade = fp->heap[0].prioridade;
+
+    fp->heap[0] = fp->heap[fp->quantidade - 1];
+    fp->quantidade--;
+
+    descer(fp, 0);
+
     return 1;
 }
 
-int tamanhoFila(Fila * f)
+int consultar(FilaPrioridade *fp, Elemento *e)
 {
-    int tam = 0;
-    for (int i = 0; i < f->total; i++)
-        tam++;
+    if (fp == NULL || filaVazia(fp))
+        return 0;
 
-    return tam;
+    *e = fp->heap[0];
+
+    return 1;
 }
