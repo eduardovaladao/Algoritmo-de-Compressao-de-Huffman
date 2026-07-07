@@ -1,4 +1,4 @@
-#include "lib/arvoreBinaria.h"
+#include "../lib/arvoreBinaria.h"
 
 int main()
 {
