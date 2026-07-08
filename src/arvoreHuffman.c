@@ -3,46 +3,27 @@
 #include <stdio.h>
 
 #include "../libraries/no.h"
+#include "../libraries/filaPrioridade.h"
 #include "../libraries/arvoreHuffman.h"
 
-void bubblesort(No **f, int f_t){
-	for (int i = 0; i < f_t - 1; i ++)
-		for (int j = 0; j < f_t - i - 1; j++)
-			if (f[j]->chave > f[j+1]->chave)
-			{
-				No *tmp = f[j];
-				f[j] = f[j+1];
-				f[j+1] = tmp;
-			}
-}
-
-No* criarArv(No **fila, int tam_f)
+No* criarArv(FilaPrioridade *f)
 {
-	No **f = fila;
-	while (tam_f > 1)
+	while (f->total > 1)
 	{
-		//ordena por prioridade (crescente)
-		bubblesort(f, tam_f);
-
 		//separa os 2 menores para folha
-		No *a = f[0];
-		No *b = f[1];
+		No *a = pop(f);
+		No *b = pop(f);
 
 		//cria uma mini-arvore
 		No *raiz = criarNo('#', a->chave + b->chave);
 		raiz->esq = a;
 		raiz->dir = b;
 
-		//remove da lista as folhas
-		for (int i = 2; i < tam_f; i++) f[i-2] = f[i];
-		tam_f -= 2;
-
 		//adiciona a mini-arvore na lista
-		f[tam_f] = raiz;
-		tam_f++;
+		push(f, raiz);
 	}
 
-  return f[0];
+  return pop(f);
 }
 
 void gerarCodigo(No* no, char cod[], int prof, char tabela[256][128])
@@ -62,13 +43,13 @@ void gerarCodigo(No* no, char cod[], int prof, char tabela[256][128])
     return;
   } 
 
-  //Para pesquisar os codigos da direita
-  cod[prof] = '1';
-  gerarCodigo(no->dir, cod, prof+1, tabela);
-
   //Para pesquisar os codigos da esquerda
   cod[prof] = '0';
   gerarCodigo(no->esq, cod, prof+1, tabela);
+
+  //Para pesquisar os codigos da direita
+  cod[prof] = '1';
+  gerarCodigo(no->dir, cod, prof+1, tabela);
 }
 
 // mostra arvore
@@ -92,13 +73,14 @@ void compressorSimples(char *input, char tabela[256][128])
 
 void huffman(char *input, int verbosity, int simple_out)
 {
-	int t = 0;
+	int strlen = 0;
 	//calculo tamanho da str
-	for (int i = 0; input[i] != '\0'; i++) t++;
+	for (int i = 0; input[i] != '\0'; i++) strlen++;
 
-	No *fila[256];
-	int t_fila = 0;
+	
+	FilaPrioridade fila = criarFila();
 
+  // vetor de frequencia
 	int freq[256] = {0};
 
 	//Soma de acordo com a frequencia
@@ -106,10 +88,12 @@ void huffman(char *input, int verbosity, int simple_out)
     freq[(unsigned char) input[i]]++;
 
 	//Adiciona na fila o que aparece
-	for (int i = 0; i < 256; i++) if (freq[i] > 0) 
-    fila[t_fila++] = criarNo((char)i, freq[i]);
+	for (int i = 0; i < 256; i++) if (freq[i] > 0)
+  {
+    int res = push(&fila, criarNo((char) i, freq[i]));
+  }
 
-	No *arv = criarArv(fila, t_fila);
+	No *arv = criarArv(&fila);
 
 	if (verbosity) 
   {

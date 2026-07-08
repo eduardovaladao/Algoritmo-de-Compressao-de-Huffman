@@ -5,8 +5,9 @@
 #include <string.h>
 
 #include "../libraries/no.h"
+#include "../libraries/filaPrioridade.h"
 
-No* criarArv(No **fila, int tam_f);
+No* criarArv(FilaPrioridade *f);
 
 // mostra arvore
 void mostrarArvore(No* n);

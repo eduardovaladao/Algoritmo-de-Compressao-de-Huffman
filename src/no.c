@@ -7,6 +7,9 @@ typedef struct No
   char val;
   struct No *esq;
   struct No *dir;
+
+  // usado somente na fila
+  struct No *prox;
 } No;
 
 No * criarNo(char val, int chave)
@@ -17,6 +20,9 @@ No * criarNo(char val, int chave)
   novo->val = val;
   novo->esq = NULL;
   novo->dir = NULL;
+
+  // usado somente na fila
+  novo->prox = NULL;
 
   return novo;
 }

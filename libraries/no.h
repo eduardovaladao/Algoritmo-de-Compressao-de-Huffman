@@ -1,5 +1,5 @@
-#ifndef NO_H
-#define NO_H
+#ifndef NO
+#define NO
 
 typedef struct No 
 {
@@ -7,6 +7,9 @@ typedef struct No
   char val;
   struct No *esq;
   struct No *dir;
+
+  // usado somente na fila
+  struct No *prox;
 } No;
 
 No * criarNo(char val, int chave);
