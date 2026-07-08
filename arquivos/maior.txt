@@ -1,0 +1,5 @@
+O objetivo do presente trabalho consiste em implementar o algoritmo de
+compressão de Huffman e apresentar, além da implementação, resultados
+de testes utilizando textos simples (leitura de arquivos em modo texto). É
+papel de cada grupo pesquisar sobre do que se trata o algoritmo, e entender
+seu funcionamento
