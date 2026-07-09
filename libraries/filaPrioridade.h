@@ -1,9 +1,20 @@
 #ifndef FILA_PRIORIDADE
 #define FILA_PRIORIDADE
 
-#include "../libraries/no.h"
+typedef struct No 
+{
+  int chave;
+  char val;
+  struct No *esq;
+  struct No *dir;
 
-#include <stdlib.h>
+  // usado somente na fila
+  struct No *prox;
+} No;
+
+No * criarNo(char val, int chave);
+
+void mostrarNo(No* n);
 
 typedef struct {
     No * inicio;

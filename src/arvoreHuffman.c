@@ -2,7 +2,6 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "../libraries/no.h"
 #include "../libraries/filaPrioridade.h"
 #include "../libraries/arvoreHuffman.h"
 

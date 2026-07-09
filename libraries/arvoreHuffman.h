@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../libraries/no.h"
 #include "../libraries/filaPrioridade.h"
 
 No* criarArv(FilaPrioridade *f);
