@@ -10,7 +10,7 @@ void mostraAjuda(char *nomeprograma)
 {
 	printf("Modo de uso: %s -v -sO 'conteudo'\n", nomeprograma);
 	printf("-v   Mostra o código com verbosidade\n");
-	printf("-cS  Compressão simples, somente mostrando na tela\n");
+	printf("-sO  Compressão simples, somente mostrando na tela\n");
 	printf("-h   Mostra opções de uso\n");
 }
 
